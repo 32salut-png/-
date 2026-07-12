@@ -485,9 +485,11 @@ function calcIncome() {
 
   const diffDays   = Math.ceil(Math.abs(end - start) / (1000*60*60*24));
   const BASE_VER = new Date('2026-07-01'); // Luna8基準日(水)
-  let verCount = 0;
+  let verCount = 0, midVerCount = 0;
   for (let d = new Date(BASE_VER); d <= end; d.setDate(d.getDate() + 42)) {
     if (d >= start) verCount++;
+    const mid = new Date(d); mid.setDate(mid.getDate() + 7);
+    if (mid >= start && mid <= end) midVerCount++;
   }
   const dailyBase  = diffDays * 120;
   const blessStone = isBlessing ? diffDays * 90 : 0;
@@ -498,7 +500,7 @@ function calcIncome() {
   }
   const spiralStone  = spiralCnt  * 800;
   const theaterStone = theaterCnt * 1000;
-  const verStone     = verCount * (300 + 600 + 80);
+  const verStone     = verCount * (300 + 600 + 80) + midVerCount * 450;
   const shopW        = shopCnt  * 5.5;
   const bpW          = isBP ? (verCount * 8.75) : (verCount * 0.5);
   const stoneTotal   = dailyBase + blessStone + spiralStone + theaterStone + verStone;
