@@ -421,7 +421,7 @@ function updatePatchSchedule() {
   let html = '';
   for (let i = 0; i < Math.min(patches.length, 3); i++) {
     const patch = patches[i];
-    const mid   = new Date(patch); mid.setDate(mid.getDate() + 21);
+    const mid   = new Date(patch); mid.setDate(mid.getDate() + 20);
     html += `<span style="color:var(--accent2)">🔴 アプデ ${fmt(patch)}</span>　<span style="color:var(--gold)">🔵 前半後半変更 ${fmt(mid)}</span>`;
     if (i < 2) html += '<br>';
   }
