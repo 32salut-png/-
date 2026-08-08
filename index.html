@@ -1132,15 +1132,48 @@ async function runMonteCarlo() {
   document.getElementById('result-mc').scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
+// ローカルストレージ（原石・スターライト・ガチャ石・課金オプションのみ保存）
+const STORAGE_KEY = 'genshin_calc_v1';
+function saveSettings() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      primogems:   document.getElementById('primogems').value,
+      starglitter: document.getElementById('starglitter').value,
+      fates:       document.getElementById('fates').value,
+      isBlessing:  document.getElementById('isBlessing').checked,
+      isBP:        document.getElementById('isBP').checked,
+    }));
+  } catch(e) { console.warn('保存失敗:', e); }
+}
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+    const s = JSON.parse(saved);
+    if (s.primogems   !== undefined) document.getElementById('primogems').value       = s.primogems;
+    if (s.starglitter !== undefined) document.getElementById('starglitter').value     = s.starglitter;
+    if (s.fates       !== undefined) document.getElementById('fates').value           = s.fates;
+    if (s.isBlessing  !== undefined) {
+      document.getElementById('isBlessing').checked = s.isBlessing;
+      document.getElementById('lbl-blessing').classList.toggle('active', s.isBlessing);
+    }
+    if (s.isBP        !== undefined) {
+      document.getElementById('isBP').checked = s.isBP;
+      document.getElementById('lbl-bp').classList.toggle('active', s.isBP);
+    }
+  } catch(e) { console.warn('読み込み失敗:', e); }
+}
+
 // イベントリスナー（重複なし）
 document.getElementById('startDate').addEventListener('change', () => { simManualOverride=false; mcManualOverride=false; syncSimWishes(); syncMcWishes(); });
 document.getElementById('endDate').addEventListener('change',   () => { simManualOverride=false; mcManualOverride=false; syncSimWishes(); syncMcWishes(); });
-document.getElementById('isBlessing').addEventListener('change',() => { simManualOverride=false; mcManualOverride=false; syncSimWishes(); syncMcWishes(); });
-document.getElementById('isBP').addEventListener('change',      () => { simManualOverride=false; mcManualOverride=false; syncSimWishes(); syncMcWishes(); });
-document.getElementById('primogems').addEventListener('input',  updateInventory);
-document.getElementById('starglitter').addEventListener('input', updateInventory);
-document.getElementById('fates').addEventListener('input',      updateInventory);
+document.getElementById('isBlessing').addEventListener('change',() => { simManualOverride=false; mcManualOverride=false; syncSimWishes(); syncMcWishes(); saveSettings(); });
+document.getElementById('isBP').addEventListener('change',      () => { simManualOverride=false; mcManualOverride=false; syncSimWishes(); syncMcWishes(); saveSettings(); });
+document.getElementById('primogems').addEventListener('input',  () => { updateInventory(); saveSettings(); });
+document.getElementById('starglitter').addEventListener('input',() => { updateInventory(); saveSettings(); });
+document.getElementById('fates').addEventListener('input',      () => { updateInventory(); saveSettings(); });
 
+loadSettings();
 updateInventory();
 </script>
 
