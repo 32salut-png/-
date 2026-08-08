@@ -514,7 +514,7 @@ function calcIncome() {
   const endVal   = document.getElementById('endDate').value;
   if (!startVal || !endVal) return null;
   const start = new Date(startVal), end = new Date(endVal);
-  if (end <= start) return null;
+  if (end < start) return null; // 終了日が開始日より前はNG、同日はOK（手持ちのみ計算）
   const isBlessing    = document.getElementById('isBlessing').checked;
   const isBP          = document.getElementById('isBP').checked;
   const primo = parseFloat(document.getElementById('primogems').value) || 0;
