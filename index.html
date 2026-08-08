@@ -550,33 +550,19 @@ function calcIncome() {
   }
   const allDates = [...PATCH_DATES, ...futureDates.slice(1)]; // lastPatchは両方に含まれるのでslice(1)
 
-  for (const d of allDates) {
-    const inRange = d >= start && d <= end;
-    // earlyは全バージョン
-    const early = new Date(d); early.setDate(early.getDate() - 12);
-    if (early >= start && early <= end) earlyCount++;
-    // verCount（アプデ当日）
-    if (inRange) verCount++;
-    // midVer: 5.7以降のみ
-    const mid = new Date(d); mid.setDate(mid.getDate() + 7);
-    if (d >= MID_VER_START && mid >= start && mid <= end) midVerCount++;
-    // change: 全バージョン
-    const change = new Date(d); change.setDate(change.getDate() + 20);
-    if (change >= start && change <= end) changeCount++;
-  }
-  // verStoneは2.2以前と2.3以降で係数が異なるため個別集計
   let verStone = 0;
-  for (const d of allDates) {
-    const isOld = d < VER_23_START;
-    const verBonus   = isOld ? 620 : 640; // 2.2以前は20減
-    const changeBonus = isOld ? 20 : 40;  // 2.2以前は20減
-    const early = new Date(d); early.setDate(early.getDate() - 12);
-    const mid   = new Date(d); mid.setDate(mid.getDate() + 7);
-    const change = new Date(d); change.setDate(change.getDate() + 20);
-    if (early >= start && early <= end)                              verStone += 300;
-    if (d >= start && d <= end)                                      verStone += verBonus;
-    if (d >= MID_VER_START && mid >= start && mid <= end)            verStone += 450;
-    if (change >= start && change <= end)                            verStone += changeBonus;
+  for (const patch of allDates) {
+    const isOld      = patch < VER_23_START;
+    const verBonus   = isOld ? 620 : 640;
+    const changeBonus = isOld ? 20 : 40;
+    // 各日付は patch のコピーから独立して生成（参照共有なし）
+    const early  = new Date(patch); early.setDate(early.getDate() - 12);
+    const mid    = new Date(patch); mid.setDate(mid.getDate() + 7);
+    const change = new Date(patch); change.setDate(change.getDate() + 20);
+    if (early >= start && early <= end)                                    { earlyCount++;  verStone += 300; }
+    if (patch >= start && patch <= end)                                    { verCount++;    verStone += verBonus; }
+    if (patch >= MID_VER_START && mid >= start && mid <= end)              { midVerCount++; verStone += 450; }
+    if (change >= start && change <= end)                                  { changeCount++; verStone += changeBonus; }
   }
   const dailyBase  = diffDays * 120;
   const blessStone = isBlessing ? diffDays * 90 : 0;
